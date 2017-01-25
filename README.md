@@ -3,5 +3,11 @@ A lightweight graphics library for the 3ds homebrew scene
 
 I am making this to port over some things for the 3ds I have made for other low power systems
 
-Requirement:
+#Use:
+For your project just add gfx.h to include and gfx.cpp to source :)
+
+#Example:
+This can be found in the form of main.cpp, mainScreen.cpp & mainScreen.h in the source
+
+#Requirement:
 libctru
