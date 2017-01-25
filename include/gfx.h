@@ -20,8 +20,10 @@ struct ds_Rect
 	int h;
 };
 
-struct u24{
-    unsigned int data : 24;
+struct ds_Point
+{
+	int x;
+	int y;
 };
 
 class ds_GFX
@@ -29,21 +31,30 @@ class ds_GFX
 public:
 	void init();
 
-	void putPixel(int x,int y, ds_Col col);
+	void putPixel(ds_Point p, ds_Col col);
 
 	//void line(int x, int y, ds_Col);
-	//void rect(ds_Rect rect, ds_Col col);
+	void rectFill(ds_Rect rect, ds_Col col);
+	void drawText(std::string text, ds_Col fg, ds_Col bg); //TODO-simple ascii text renderer
+
 
 	void clear(ds_Col col);
 
 	void beginFrame(gfxScreen_t scr);
 
 	void pushFrame();
-	int w;
-	int h;
+
+	//data access
+	int getWidth();
+	int getHeight();
+	int textScale;
+	ds_Point textCursor;
 private:
 	u8* fBuff;
 	bool top;
+
+	int w;
+	int h;
 };
 
 #endif /* gfx_h */
