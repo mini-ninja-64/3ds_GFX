@@ -5,7 +5,7 @@ void mainScreen::init(ds_GFX gfx){
 }
 
 void mainScreen::input(ds_GFX gfx){
-	if (hidkeydown() & KEY_A){
+	if (hidKeysDown() & KEY_A){
 		bg.r = rand() % 255;
 		bg.g = rand() % 255;
 		bg.b = rand() % 255;
