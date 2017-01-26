@@ -1,14 +1,33 @@
 #include "gfx.h"
 
-ds_image * loadImage(std::string path){
+ds_Image * loadImage(std::string path){
+	//loads a standard rgb bmp (not bmp custom format)
+	//.3ds_Image
+	//TODO: write a bmp to this shit convertor
 	ds_image img;
 	ifstream bmp(path.c_str(), ios::binary|ios::ate);
-	img.Buffer = new u8[length2]; //create char array for file bytes
-
+	int filelength = bmp.tellg();
+	unsigned char fBuffer = new char[filelength];
 	bmp.seekg(0, ios::beg);
-
-	bmp.read(fileBytes2, length2); //read file bytes into char array
-
+	bmp.read(fBuffer, filelength); //read file bytes into char array
+	
+	//4 bytes = w
+	//4 bytes = h
+	//pixel array (r,g,b)
+	
+	//4*8 = 32 bits
+	//32 - 8 = 24
+	//24 - 8 = 16
+	//16 - 8 = 8
+	unsigned int imgW = (fBuffer[0] << 24) && (fBuffer[1] << 16) && (fBuffer[2] << 8) && (fBuffer[3]);
+	unsigned int imgH = (fBuffer[4] << 24) && (fBuffer[5] << 16) && (fBuffer[6] << 8) && (fBuffer[7]);
+	
+	img.w = imgW;
+	img.h = imgH;
+	img.Buffer = new u8[imgW*imgH*3];
+	for (int i = 0; i < imgW*imgH*3; i++){
+		img.Buffer[i] = fBuffer[8+i];
+	}
 }
 
 void ds_GFX::init(){
