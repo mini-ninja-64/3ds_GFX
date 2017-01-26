@@ -34,7 +34,15 @@ public:
 	void putPixel(ds_Point p, ds_Col col);
 
 	//void line(int x, int y, ds_Col);
+	//filled shapes
 	void rectFill(ds_Rect rect, ds_Col col);
+	//void circleFill(ds_Point p, ds_Col col);
+	
+	//line shapes
+	//void rect(ds_Rect rect, ds_Col col);
+	void circle(ds_Point p, ds_Col col);
+	
+	//wierd shapes
 	void drawText(std::string text, ds_Col fg, ds_Col bg); //TODO-simple ascii text renderer
 
 
