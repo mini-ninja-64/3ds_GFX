@@ -5,6 +5,9 @@
 #include <iostream>
 #include <string.h>
 
+#include <fstream>
+#include <sstream>
+
 struct ds_Image
 {
 	u8 * Buffer;
