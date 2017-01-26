@@ -1,5 +1,16 @@
 #include "gfx.h"
 
+ds_image * loadImage(std::string path){
+	ds_image img;
+	ifstream bmp(path.c_str(), ios::binary|ios::ate);
+	img.Buffer = new u8[length2]; //create char array for file bytes
+
+	bmp.seekg(0, ios::beg);
+
+	bmp.read(fileBytes2, length2); //read file bytes into char array
+
+}
+
 void ds_GFX::init(){
 	gfxInitDefault();
 	consoleInit(GFX_BOTTOM, NULL);
