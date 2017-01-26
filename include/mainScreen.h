@@ -10,7 +10,7 @@ public:
 	void update(ds_GFX gfx);
 	void draw(ds_GFX gfx);
 private:
-	
+	ds_Col bg;
 };
 
 #endif /* mainScreen_h */
