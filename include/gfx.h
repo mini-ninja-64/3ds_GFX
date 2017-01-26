@@ -5,6 +5,11 @@
 #include <iostream>
 #include <string.h>
 
+struct ds_Image
+{
+	u8 * Buffer;
+};
+
 struct ds_Col
 {
 	u8 r;
@@ -25,6 +30,8 @@ struct ds_Point
 	int x;
 	int y;
 };
+
+void loadImage(std::string path);
 
 class ds_GFX
 {
