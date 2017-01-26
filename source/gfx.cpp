@@ -30,6 +30,21 @@ ds_Image * loadImage(std::string path){
 	}
 }
 
+void ds_GFX::drawImg(ds_Point p, ds_Image img){
+	for(int x = 0; x < rect.w; x++){
+		for(int y = 0; y < rect.h; y++){
+			if(!((p.y+y)>=h || (p.y+y)<=-1 || (p.x+x)>=w || (p.x+x)<=-1)){
+				int pitch =  h * (sizeof(u8) * 3);
+				int pos = ((p.x+x) * pitch) + ((h-1-(p.y+y)) * sizeof(u8) * 3);
+				int imgBuffPos = (x * pitch) + ((h-1-y) * sizeof(u8) * 3);
+				fBuff[ pos ] = img.Buffer[imgBuffPos];
+				fBuff[ pos+1 ] = img.Buffer[imgBuffPos+1];
+				fBuff[ pos+2 ] = img.Buffer[imgBuffPos+2];
+			}
+		}
+	}
+}
+
 void ds_GFX::init(){
 	gfxInitDefault();
 	consoleInit(GFX_BOTTOM, NULL);
