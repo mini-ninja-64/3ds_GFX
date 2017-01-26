@@ -31,7 +31,7 @@ struct ds_Point
 	int y;
 };
 
-void loadImage(std::string path);
+ds_image * loadImage(std::string path);
 
 class ds_GFX
 {
