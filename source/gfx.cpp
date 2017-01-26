@@ -34,6 +34,34 @@ void ds_GFX::pushFrame(){
 	gspWaitForVBlank();
 }
 
+void circle(ds_Point p, ds_Col col, int r)
+	unsigned int x= r0, y= 0;//local coords
+	int cd2= 0;  //current distance squared - radius squared
+
+	int xc = p.x; int yc = p.y;
+
+	if (!r0) return;
+	putPixel((ds_Point){xc-r0, yc}, col);
+	putPixel((ds_Point){xc+r0, yc}, col);
+	putPixel((ds_Point){xc, yc-r0}, col);
+	putPixel((ds_Point){xc, yc+r0}, col);
+
+	while (x > y)    //only formulate 1/8 of circle
+	{
+		cd2-= (--x) - (++y);
+		if (cd2 < 0) cd2+=x++;
+
+		putPixel((ds_Point){xc-x, yc-y}, col);//upper left left
+		putPixel((ds_Point){xc-y, yc-x}, col);//upper upper left
+		putPixel((ds_Point){xc+y, yc-x}, col);//upper upper right
+		putPixel((ds_Point){xc+x, yc-y}, col);//upper right right
+		putPixel((ds_Point){xc-x, yc+y}, col);//lower left left
+		putPixel((ds_Point){xc-y, yc+x}, col);//lower lower left
+		putPixel((ds_Point){xc+y, yc+x}, col);//lower lower right
+		putPixel((ds_Point){xc+x, yc+y}, col);//lower right right
+	}
+}
+
 void ds_GFX::putPixel(ds_Point p, ds_Col col){
 	if(!(p.y>=h || p.y<=-1 || p.x>=w || p.x<=-1)){
 		int pitch =  h * (sizeof(u8) * 3);
