@@ -2,7 +2,7 @@
 A lightweight graphics library for the 3ds homebrew scene
 
 #Current State
-ehh not working so great, currently woking on image loading.
+Working Great-ish images can now load!
 
 I am making this to port over some things for the 3ds I have made for other low power systems
 
