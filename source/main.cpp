@@ -1,8 +1,12 @@
 #include <3ds.h>
 #include <iostream>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "gfx.h"
 #include "mainScreen.h"
+
+u8* buffer;
 
 int main(int argc, char **argv) {
 	int x = 0;
@@ -13,6 +17,7 @@ int main(int argc, char **argv) {
 	gfx.init();
 	mainScreen mscr;
 	mscr.init(gfx);
+
     while(aptMainLoop()) {
         hidScanInput();
         if(hidKeysDown() & KEY_START) {

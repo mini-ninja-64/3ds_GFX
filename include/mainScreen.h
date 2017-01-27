@@ -10,7 +10,16 @@ public:
 	void update(ds_GFX gfx);
 	void draw(ds_GFX gfx);
 private:
-	ds_Col bg;
+	ds_Image backImg;
+	ds_Image bill;
+	ds_Image rock;
+
+	ds_Point bgP;
+	ds_Point billP;
+	ds_Point rockP;
+
+	int score;
+	bool dead;
 };
 
 #endif /* mainScreen_h */

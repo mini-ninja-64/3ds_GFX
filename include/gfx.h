@@ -8,8 +8,12 @@
 #include <fstream>
 #include <sstream>
 
+
+
 struct ds_Image
 {
+	int w;
+	int h;
 	u8 * Buffer;
 };
 
@@ -34,7 +38,9 @@ struct ds_Point
 	int y;
 };
 
-ds_image * loadImage(std::string path);
+bool operator==(const ds_Col& lhs, const ds_Col& rhs);
+
+ds_Image loadImage(const u8 * fileArray);
 
 class ds_GFX
 {
@@ -43,14 +49,19 @@ public:
 
 	void putPixel(ds_Point p, ds_Col col);
 
-	//void line(int x, int y, ds_Col);
+	void drawImage(ds_Point p, ds_Image * img);
+	void drawImage(ds_Point p, ds_Image * img, ds_Col trans); //coz i'm lazy and didnt wanna support transparency
+	
+	//lines
+	void line(ds_Point p0, ds_Point p1, ds_Col col);
+	
 	//filled shapes
 	void rectFill(ds_Rect rect, ds_Col col);
 	//void circleFill(ds_Point p, ds_Col col);
 	
 	//line shapes
-	//void rect(ds_Rect rect, ds_Col col);
-	void circle(ds_Point p, ds_Col col);
+	void rect(ds_Rect rect, ds_Col col);
+	void circle(ds_Point p, ds_Col col, int r);
 	
 	//wierd shapes
 	void drawText(std::string text, ds_Col fg, ds_Col bg); //TODO-simple ascii text renderer
@@ -67,8 +78,8 @@ public:
 	int getHeight();
 	int textScale;
 	ds_Point textCursor;
-private:
 	u8* fBuff;
+private:
 	bool top;
 
 	int w;
