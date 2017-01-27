@@ -1,53 +1,91 @@
 #include "gfx.h"
 
-ds_Image * loadImage(std::string path){
-	//loads a standard rgb bmp (not bmp custom format)
-	//.3ds_Image
-	//TODO: write a bmp to this shit convertor
-	ds_image img;
-	ifstream bmp(path.c_str(), ios::binary|ios::ate);
-	int filelength = bmp.tellg();
-	unsigned char fBuffer = new char[filelength];
-	bmp.seekg(0, ios::beg);
-	bmp.read(fBuffer, filelength); //read file bytes into char array
-	
+bool operator==(const ds_Col& lhs, const ds_Col& rhs)
+{
+	return ((lhs.r == rhs.r) && (lhs.g == rhs.g) && (lhs.b == rhs.b));
+}
+
+ds_Image loadImage(const u8 * fileArray){
 	//4 bytes = w
 	//4 bytes = h
-	//pixel array (r,g,b)
-	
-	//4*8 = 32 bits
-	//32 - 8 = 24
-	//24 - 8 = 16
-	//16 - 8 = 8
-	unsigned int imgW = (fBuffer[0] << 24) && (fBuffer[1] << 16) && (fBuffer[2] << 8) && (fBuffer[3]);
-	unsigned int imgH = (fBuffer[4] << 24) && (fBuffer[5] << 16) && (fBuffer[6] << 8) && (fBuffer[7]);
-	
-	img.w = imgW;
-	img.h = imgH;
-	img.Buffer = new u8[imgW*imgH*3];
-	for (int i = 0; i < imgW*imgH*3; i++){
-		img.Buffer[i] = fBuffer[8+i];
+	//pixel array (b,g,r)
+	ds_Image img;
+	img.w =  (int)((unsigned char)(fileArray[0]) << 24 |	(unsigned char)(fileArray[1]) << 16 | (unsigned char)(fileArray[2]) << 8 | (unsigned char)(fileArray[3]));
+	img.h = (int)((unsigned char)(fileArray[4]) << 24 |	(unsigned char)(fileArray[5]) << 16 | (unsigned char)(fileArray[6]) << 8 | (unsigned char)(fileArray[7]));
+	img.Buffer = new u8[img.w*img.h*3];
+	//memcpy( &img->Buffer[0], &fileArray[8], (img->w*img->h*3) * sizeof( u8 ) );
+	for (int i = 0; i < img.w*img.h*3; i++){
+		img.Buffer[i] = fileArray[8+i];
+	}
+	return (img);
+}
+
+void ds_GFX::drawImage(ds_Point p, ds_Image * img){
+	for(int x = 0; x < img->w; x++){
+		for(int y = 0; y < img->h; y++){
+			//get pos of pixel col in img
+			int pitch =  img->w * (sizeof(u8) * 3);
+			int pos = (y * pitch) + (x * sizeof(u8) * 3);
+			//get img pixel
+			ds_Col c = {img->Buffer[pos+2],img->Buffer[pos+1],img->Buffer[pos]};
+
+			//draw pixel
+			putPixel((ds_Point){p.x+x,p.y+y},c);
+		}
+
 	}
 }
 
-void ds_GFX::drawImg(ds_Point p, ds_Image img){
-	for(int x = 0; x < rect.w; x++){
-		for(int y = 0; y < rect.h; y++){
-			if(!((p.y+y)>=h || (p.y+y)<=-1 || (p.x+x)>=w || (p.x+x)<=-1)){
-				int pitch =  h * (sizeof(u8) * 3);
-				int pos = ((p.x+x) * pitch) + ((h-1-(p.y+y)) * sizeof(u8) * 3);
-				int imgBuffPos = (x * pitch) + ((h-1-y) * sizeof(u8) * 3);
-				fBuff[ pos ] = img.Buffer[imgBuffPos];
-				fBuff[ pos+1 ] = img.Buffer[imgBuffPos+1];
-				fBuff[ pos+2 ] = img.Buffer[imgBuffPos+2];
+void ds_GFX::drawImage(ds_Point p, ds_Image * img, ds_Col trans){
+	for(int x = 0; x < img->w; x++){
+		for(int y = 0; y < img->h; y++){
+			//get pos of pixel col in img
+			int pitch =  img->w * (sizeof(u8) * 3);
+			int pos = (y * pitch) + (x * sizeof(u8) * 3);
+			//get img pixel
+			ds_Col c = {img->Buffer[pos+2],img->Buffer[pos+1],img->Buffer[pos]};
+				//std::cout << (int)trans.r << "," << (int)trans.g << "," << (int)trans.b << std::endl;
+				//std::cout << (int)c.r << "," << (int)c.g << "," << (int)c.b << std::endl;
+
+			//svcSleepThread(1000000000);	
+
+			if (!(trans == c)){
+				//draw pixel
+				putPixel((ds_Point){p.x+x,p.y+y},c);
 			}
 		}
+
+	}
+}
+
+//http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C - for speed just copy/paste will implement my self later
+void ds_GFX::line(ds_Point p0, ds_Point p1, ds_Col col){
+	int x0 = p0.x; int x1 = p1.x;
+	int y0 = p0.y; int y1 = p1.y;
+	
+	int dx = abs(x1-x0), sx = x0<x1 ? 1 : -1;
+	int dy = abs(y1-y0), sy = y0<y1 ? 1 : -1; 
+	int err = (dx>dy ? dx : -dy)/2, e2;
+ 
+	for(;;){
+		putPixel((ds_Point){x0,y0}, col);
+		if (x0==x1 && y0==y1) break;
+		e2 = err;
+		if (e2 >-dx) { err -= dy; x0 += sx; }
+		if (e2 < dy) { err += dx; y0 += sy; }
 	}
 }
 
 void ds_GFX::init(){
 	gfxInitDefault();
 	consoleInit(GFX_BOTTOM, NULL);
+}
+
+void ds_GFX::rect(ds_Rect rect, ds_Col col){
+	line((ds_Point){rect.x,rect.y},(ds_Point){rect.x+rect.w,rect.y},col);
+	line((ds_Point){rect.x+rect.w,rect.y},(ds_Point){rect.x+rect.w,rect.y+rect.h},col);
+	line((ds_Point){rect.x+rect.w,rect.y+rect.h},(ds_Point){rect.x,rect.y+rect.h},col);
+	line((ds_Point){rect.x,rect.y+rect.h},(ds_Point){rect.x,rect.y},col);
 }
 
 void ds_GFX::rectFill(ds_Rect rect, ds_Col col){
@@ -73,23 +111,33 @@ void ds_GFX::beginFrame(gfxScreen_t scr){
 	fBuff = gfxGetFramebuffer(scr, GFX_LEFT, NULL/*W*/, NULL/*H*/);
 }
 
+
+int ds_GFX::getWidth(){
+	return w;
+}
+
+int ds_GFX::getHeight(){
+	return h;
+}
+
 void ds_GFX::pushFrame(){
 	gfxFlushBuffers();	
 	gfxSwapBuffers();
 	gspWaitForVBlank();
 }
 
-void circle(ds_Point p, ds_Col col, int r)
-	unsigned int x= r0, y= 0;//local coords
-	int cd2= 0;  //current distance squared - radius squared
+void ds_GFX::circle(ds_Point p, ds_Col col, int r){
+	int x = r;
+	int y = 0;//local coords
+	int cd2 = 0;  //current distance squared - radius squared
 
 	int xc = p.x; int yc = p.y;
 
-	if (!r0) return;
-	putPixel((ds_Point){xc-r0, yc}, col);
-	putPixel((ds_Point){xc+r0, yc}, col);
-	putPixel((ds_Point){xc, yc-r0}, col);
-	putPixel((ds_Point){xc, yc+r0}, col);
+	if (!r) return;
+	putPixel((ds_Point){xc-r, yc}, col);
+	putPixel((ds_Point){xc+r, yc}, col);
+	putPixel((ds_Point){xc, yc-r}, col);
+	putPixel((ds_Point){xc, yc+r}, col);
 
 	while (x > y)    //only formulate 1/8 of circle
 	{
