@@ -101,9 +101,18 @@ void mainScreen::update(ds_GFX gfx){
 			}
 			score++;
 		}
-
-		//TODO: two rects, head and body
-		if ( ((billP.x+bill.w) > rockP.x) && ((billP.x) < (rockP.x+rock.w)) ){
+		
+		if ((rectInRect((ds_Rect){billP.x,billP.y+/*head height*/,bill.w,/*body height*/},(ds_Rect){rockP.x,rockP.y,rock.w,rock.h}))
+		   || (rectInRect( (ds_Rect){billP.x+/*head dist*/,billP.y,/*head w*/,/*head h*/},(ds_Rect){rockP.x,rockP.y,rock.w,rock.h}))){
+			std::cout << "Score: " << score << std::endl << std::endl;
+			std::cout << "Press A to play" << std::endl;
+			dead = true;
+			score = 0;
+		
+		}
+			
+		//}else if (rectInRect( (ds_Rect){billP.x+/*head dist*/,billP.y,/*head w*/,/*head h*/},(ds_Rect){rockP.x,rockP.y,rock.w,rock.h} )){
+		/*if ( ((billP.x+bill.w) > rockP.x) && ((billP.x) < (rockP.x+rock.w)) ){
 			//if bill in rock
 			if ( ((billP.y+bill.h) > rockP.y) && ((billP.y) < (rockP.y+rock.h)) ){
 				//std::cout << "in rock" << std::endl;
@@ -115,8 +124,17 @@ void mainScreen::update(ds_GFX gfx){
 				//std::cout << "not" << std::endl;
 			}
 		}else{
+			//if bill in rock
+			if ( ((billP.y+bill.h) > rockP.y) && ((billP.y) < (rockP.y+rock.h)) ){
+				//std::cout << "in rock" << std::endl;
+				std::cout << "Score: " << score << std::endl << std::endl;
+				std::cout << "Press A to play" << std::endl;
+				dead = true;
+				score = 0;
+			}else{
 				//std::cout << "not" << std::endl;
-		}
+			}
+		}*/
 
 		rockP.x -= 4+score;
 
@@ -125,6 +143,19 @@ void mainScreen::update(ds_GFX gfx){
 	if (bgP.x <= -400){
 		bgP.x = 0;
 	}
+}
+
+bool rectInRect(ds_Rect r1, ds_Rect r2){
+	bool inside = false;
+	if ( ((billP.x+bill.w) > rockP.x) && ((billP.x) < (rockP.x+rock.w)) ){
+		//if bill in rock
+		if ( ((billP.y+bill.h) > rockP.y) && ((billP.y) < (rockP.y+rock.h)) ){
+			//std::cout << "in rock" << std::endl;
+			inside = true;
+		}
+	}
+	
+	return inside;
 }
 
 void mainScreen::draw(ds_GFX gfx){
