@@ -147,9 +147,9 @@ void mainScreen::update(ds_GFX gfx){
 
 bool rectInRect(ds_Rect r1, ds_Rect r2){
 	bool inside = false;
-	if ( ((billP.x+bill.w) > rockP.x) && ((billP.x) < (rockP.x+rock.w)) ){
+	if ( ((r1.x+r1.w) > r2.x) && ((r1.x) < (r2.x+r2.w)) ){
 		//if bill in rock
-		if ( ((billP.y+bill.h) > rockP.y) && ((billP.y) < (rockP.y+rock.h)) ){
+		if ( ((r1.y+r1.h) > r2.y) && ((r1.y) < (r2.y+r2.h)) ){
 			//std::cout << "in rock" << std::endl;
 			inside = true;
 		}
